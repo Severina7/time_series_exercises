@@ -29,6 +29,18 @@ def get_items():
             break
     return pd.DataFrame(items)
 
+# This function allows the user to retrieve
+# the local df obtained from the link above
+def get_local_items():
+    if os.path.exists('items_df.csv'):
+        return pd.read_csv('items_df.csv')
+    df = get_items()
+    df.to_csv('items_df.csv', index=False)
+    return df
+
+
+
+#################################################################
 # This function gets the store data
 
 def get_stores():
@@ -53,6 +65,18 @@ def get_stores():
     return pd.DataFrame(stores)
 
 
+# This function allows the user to retrieve
+# the local df obtained from the link above
+def get_local_stores():
+    if os.path.exists('stores_df.csv'):
+        return pd.read_csv('stores_df.csv')
+    df = get_stores()
+    df.to_csv('stores_df.csv', index=False)
+    return df
+
+
+
+#################################################################
 # This function gets the sales data
 
 def get_sales():
@@ -78,20 +102,34 @@ def get_sales():
     return pd.DataFrame(sales)
 
 
-# This function gets the opsd_germany data
-
-def get_opsd_germany():
-    if os.path.exists('opsd.csv'):
-        return pd.read_csv('opsd.csv')
-    df = pd.read_csv('https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv')
-    df.to_csv('opsd.csv', index=False)
+# This function allows the user to retrieve
+# the local df obtained from the link above
+def get_local_sales():
+    if os.path.exists('sales_df.csv'):
+        return pd.read_csv('sales_df.csv')
+    df = get_sales()
+    df.to_csv('sales_df.csv', index=False)
     return df
 
 
+
+#################################################################
+# This function gets the opsd_germany data
+
+def get_opsd_germany():
+    if os.path.exists('opsd_df.csv'):
+        return pd.read_csv('opsd_df.csv')
+    df = pd.read_csv('https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv')
+    df.to_csv('opsd_df.csv', index=False)
+    return df
+
+
+
+#################################################################
 # This function gets any data regardless
 # of its endpoint for this exercise
 
-def get_api_data():
+def get_api_data(endpoint):
     '''
     Using a for loop to get each page from
     the data via url until last page.
