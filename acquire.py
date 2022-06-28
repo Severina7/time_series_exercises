@@ -6,128 +6,7 @@ import pandas as pd
 import requests
 import os
 
-# This function gets the items dataframe
-def get_items():
-    '''
-    Using a for loop to get each page from
-    the data via url until last page.
-    Stops the loop when request gets a None
-    at the end of the pages
-    '''
-    # Setting up variables
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/items'
-    items = []
-        
-    for i in endpoint:
-        url = domain + endpoint
-        response = requests.get(url)
-        data = response.json()
-        items.extend(data['payload']['items'])
-        endpoint = data['payload']['next_page']
-        if endpoint == None:
-            break
-    return pd.DataFrame(items)
-
-# This function allows the user to retrieve
-# the local df obtained from the link above
-def get_local_items():
-    if os.path.exists('items_df.csv'):
-        return pd.read_csv('items_df.csv')
-    df = get_items()
-    df.to_csv('items_df.csv', index=False)
-    return df
-
-
-
-#################################################################
-# This function gets the store data
-
-def get_stores():
-    '''
-    Using a for loop to get each page from
-    the data via url until last page.
-    Stops the loop when request gets a None
-    at the end of the pages
-    '''
-    # Setup
-    domain = 'https://api.data.codeup.com'
-    endpoint = '/api/v1/stores'
-    stores = []
-    for i in endpoint:
-        url = domain + endpoint
-        response = requests.get(url)
-        data = response.json()
-        stores.extend(data['payload']['stores'])
-        endpoint = data['payload']['next_page']
-        if endpoint == None:
-            break
-    return pd.DataFrame(stores)
-
-
-# This function allows the user to retrieve
-# the local df obtained from the link above
-def get_local_stores():
-    if os.path.exists('stores_df.csv'):
-        return pd.read_csv('stores_df.csv')
-    df = get_stores()
-    df.to_csv('stores_df.csv', index=False)
-    return df
-
-
-
-#################################################################
-# This function gets the sales data
-
-def get_sales():
-    '''
-    Using a for loop to get each page from
-    the data via url until last page.
-    Stops the loop when request gets a None
-    at the end of the pages
-    '''
-    # Setup
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/sales'
-    sales = []
-    for i in endpoint:
-        url = domain + endpoint
-        response = requests.get(url)
-        data = response.json()
-        sales.extend(data['payload']['sales'])
-        # Update the endpoint
-        endpoint = data['payload']['next_page']
-        if endpoint == None:
-            break
-    return pd.DataFrame(sales)
-
-
-# This function allows the user to retrieve
-# the local df obtained from the link above
-def get_local_sales():
-    if os.path.exists('sales_df.csv'):
-        return pd.read_csv('sales_df.csv')
-    df = get_sales()
-    df.to_csv('sales_df.csv', index=False)
-    return df
-
-
-
-#################################################################
-# This function gets the opsd_germany data
-
-def get_opsd_germany():
-    if os.path.exists('opsd_df.csv'):
-        return pd.read_csv('opsd_df.csv')
-    df = pd.read_csv('https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv')
-    df.to_csv('opsd_df.csv', index=False)
-    return df
-
-
-
-#################################################################
-# This function gets any data regardless
-# of its endpoint for this exercise
+# Putting the function together for reproduction
 
 def get_api_data(endpoint):
     '''
@@ -136,29 +15,101 @@ def get_api_data(endpoint):
     Stops the loop when request gets a None
     at the end of the pages
     '''
-    # Setup
-    domain = 'https://python.zgulde.net'
-    endpoint = '/api/v1/sales'
-    sales = []
-    for i in endpoint:
-        url = domain + endpoint
-        response = requests.get(url)
-        data = response.json()
-        sales.extend(data['payload']['sales'])
-        # Update the endpoint
-        endpoint = data['payload']['next_page']
-        if endpoint == None:
-            break
-    return pd.DataFrame(sales)
-
-
-
-#################################################################
+    
+    # API parameters setup and entry check
+    if endpoint not in ['items', 'stores', 'sales']:
+        return "Entry not for API. Check documentation with: response = requests.get(base_url + /documentation))"
+    host = "https://python.zgulde.net/"
+    api = "api/v1/"
+    url = host + api + endpoint
+    response = requests.get(url)
+    # Endpoint must only be 'stores', 'items', or 'sales'
+    if response.ok:
+        payload = response.json()["payload"]
+        contents = payload[endpoint]
+        df = pd.DataFrame(contents)
+        next_page = payload["next_page"]
+        # Loading content page after page into a df then printing the process
+        while next_page:
+            url = host + next_page
+            response = requests.get(url)
+            payload = response.json()["payload"]
+            next_page = payload["next_page"] 
+            print(f'\rGetting page {payload["page"]} of {payload["max_page"]}: {url}', end='')      
+            contents = payload[endpoint]
+            df = pd.concat([df, pd.DataFrame(contents)])
+            df = df.reset_index(drop=True) 
+    return df
 
 
 # This function allows the user to retrieve
-# the local df obtained by merging stores,
-# items, and sales
-def get_local_sales_info():
-    if os.path.exists('sales_info.csv'):
-        return pd.read_csv('sales_info.csv')
+# the local items_df obtained from the link above
+def get_local_items_df():
+    if os.path.exists('items_df.csv'):
+        return pd.read_csv('items_df.csv')
+    df = get_api_data('items_df')
+    df.to_csv('items_df.csv', index=False)
+    return df
+
+
+# This function allows the user to retrieve
+# the local stores_df obtained from the link above
+def get_local_stores_df():
+    if os.path.exists('stores_df.csv'):
+        return pd.read_csv('stores_df.csv')
+    df = get_api_data('stores_df')
+    df.to_csv('stores_df.csv', index=False)
+    return df
+
+
+# This function allows the user to retrieve
+# the local sales_df obtained from the link above
+def get_local_sales_df():
+    if os.path.exists('sales_df.csv'):
+        return pd.read_csv('sales_df.csv')
+    df = get_api_data('sales_df')
+    df.to_csv('sales_df.csv', index=False)
+    return df
+
+# This function allows the user to retrieve
+# the local sales df obtained from the link above
+def get_local_sales():
+    if os.path.exists('sales.csv'):
+        return pd.read_csv('sales.csv')
+    df = get_api_data()
+    df.to_csv('sales_df.csv', index=False)
+    return df
+
+
+#################################################################
+# This function creates and retrieves the sales data
+
+def get_sales():
+    '''
+    This function retrieves 3 different df obtained
+    in the setup part of the function, then transforms
+    the sales_df dfto allow for concatnation and then
+    returns a df from all 3
+    '''
+def get_sales_data():
+    # Setup
+    items_df = get_api_data('items_df')
+    stores_df = get_api_data('stores_df')
+    sales_df = get_api_data('sales_df')
+
+    sales_df.rename(columns={'item': 'item_id', 'store': 'store_id'}, inplace=True)
+
+    df = pd.merge(sales_df, items_df, how='left', on='item_id')
+    df = pd.merge(df, stores_df, how='left', on='store_id')
+    return df
+
+
+#################################################################
+# This function gets the opsd_germany data
+
+def get_opsd_germany():
+    if os.path.exists('opsd.csv'):
+        return pd.read_csv('opsd.csv')
+    df = pd.read_csv('https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv')
+    df.to_csv('opsd.csv', index=False)
+    return df
