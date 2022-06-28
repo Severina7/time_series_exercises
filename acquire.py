@@ -150,3 +150,15 @@ def get_api_data(endpoint):
         if endpoint == None:
             break
     return pd.DataFrame(sales)
+
+
+
+#################################################################
+
+
+# This function allows the user to retrieve
+# the local df obtained by merging stores,
+# items, and sales
+def get_local_sales_info():
+    if os.path.exists('sales_info.csv'):
+        return pd.read_csv('sales_info.csv')
