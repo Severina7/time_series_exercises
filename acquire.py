@@ -29,7 +29,7 @@ def get_api_data(endpoint):
         contents = payload[endpoint]
         df = pd.DataFrame(contents)
         next_page = payload["next_page"]
-        # Loading content page after page into a df then printing the process
+        # Loading content page after page into a df then printing out the process
         while next_page:
             url = host + next_page
             response = requests.get(url)
@@ -47,8 +47,8 @@ def get_api_data(endpoint):
 def get_local_items_df():
     if os.path.exists('items_df.csv'):
         return pd.read_csv('items_df.csv')
-    df = get_api_data('items_df')
-    df.to_csv('items_df.csv', index=False)
+#     df = get_api_data('items_df')
+#     df.to_csv('items_df.csv', index=False)
     return df
 
 
@@ -57,8 +57,8 @@ def get_local_items_df():
 def get_local_stores_df():
     if os.path.exists('stores_df.csv'):
         return pd.read_csv('stores_df.csv')
-    df = get_api_data('stores_df')
-    df.to_csv('stores_df.csv', index=False)
+#     df = get_api_data('stores_df')
+#     df.to_csv('stores_df.csv', index=False)
     return df
 
 
@@ -67,8 +67,8 @@ def get_local_stores_df():
 def get_local_sales_df():
     if os.path.exists('sales_df.csv'):
         return pd.read_csv('sales_df.csv')
-    df = get_api_data('sales_df')
-    df.to_csv('sales_df.csv', index=False)
+#     df = get_api_data('sales_df')
+#     df.to_csv('sales_df.csv', index=False)
     return df
 
 # This function allows the user to retrieve
@@ -76,8 +76,8 @@ def get_local_sales_df():
 def get_local_sales():
     if os.path.exists('sales.csv'):
         return pd.read_csv('sales.csv')
-    df = get_api_data()
-    df.to_csv('sales_df.csv', index=False)
+#     df = get_api_data()
+#     df.to_csv('sales_df.csv', index=False)
     return df
 
 
