@@ -10,10 +10,9 @@ import os
 
 def get_api_data(endpoint):
     '''
-    Using a for loop to get each page from
+    Using an if statement to get the right endpoint
+    and a while loop to get each page from
     the data via url until last page.
-    Stops the loop when request gets a None
-    at the end of the pages
     '''
     
     # API parameters setup and entry check
