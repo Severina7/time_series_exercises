@@ -82,15 +82,13 @@ def get_local_sales():
 
 #################################################################
 # This function creates and retrieves the sales data
-
-def get_sales():
+def get_sales_data():
     '''
     This function retrieves 3 different df obtained
     in the setup part of the function, then transforms
     the sales_df dfto allow for concatnation and then
     returns a df from all 3
     '''
-def get_sales_data():
     # Setup
     items_df = get_api_data('items_df')
     stores_df = get_api_data('stores_df')
